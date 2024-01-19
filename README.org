@@ -20,12 +20,95 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 * Table of Contents :toc:
 - [[#build][Build]]
+  - [[#binary][Binary]]
+  - [[#image][Image]]
+  - [[#helm-chart][Helm Chart]]
+- [[#deploy][Deploy]]
+  - [[#helm-chart-1][Helm Chart]]
+  - [[#argo-cd-application][Argo CD Application]]
 - [[#usage][Usage]]
 
 * Build
 
-(...)
+** Binary
+
+The ~kurama~ binary can be built with the following command:
+#+begin_src sh
+$  go build [-v]
+#+end_src
+Some things can be tweaked by using these ENV vars:
+- *CGO_ENABLED:* The default is ~1~, which means the resulting binary will be dynamically linked with some system libraries (e.g. ~libc~, etc.). If wanted to build the binary statically, it can be passed a value of ~0~ instead.
+- *GOARCH:* Target architecture, defaults to host.
+- *GOOS:* Target operating system, defaults to host.
+
+** Image
+
+To build the container image which will be deployed later to a Kubernetes cluster, execute the following command:
+#+begin_src sh
+$  buildah build -t kurama
+#+end_src
+The same variables defined before can be passed in as build args, e.g.:
+#+begin_src sh
+$  buildah build -t kurama --build-arg="GOARCH=arm64"
+#+end_src
+
+This image is hosted here at *GHCR*, specifically under ~ghcr.io/iwas-coder/kurama~, and it's updated regularly.
+
+** Helm Chart
+
+To package the given *Helm Chart* (under the ~chart/~ directory) it's as easy as executing:
+#+begin_src sh
+$  helm package chart
+#+end_src
+It will output a compressed archive named ~kurama-<VERSION>.tgz~, which can be used later on as an alternative method to deploy the app.
+
+* Deploy
+
+** Helm Chart
+
+Kurama is packaged within a *Helm Chart*, whose source code is hosted under the ~chart/~ directory. Thus, can be easily deployed to a cluster by executing the following commands:
+#+begin_src sh
+$  helm [-n <NS>] upgrade --install [--atomic --create-namespace] kurama oci://ghcr.io/iwas-coder/kurama
+#+end_src
+The GHCR OCI URL can be replaced by the path to a locally packaged chart (/explained in the section right above/), if preferred.
+
+** Argo CD Application
+
+Kurama can also be deployed to a cluster via Argo CD and its declarative approach. This is an example of an Argo CD's ~Application~ resource which deploys Kurama to its own namespace (the ~argo-cd~ namespace should be replaced by its given name when Argo CD was installed):
+#+begin_src yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kurama
+  namespace: argo-cd
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/iWas-Coder/kurama
+    targetRevision: HEAD
+    path: chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kurama
+  syncPolicy:
+    syncOptions: [CreateNamespace=true]
+    automated:
+      prune: true
+      selfHeal: true
+#+end_src
 
 * Usage
 
-(...)
+This is a basic definition example of the ~KuramaJob~ custom resource:
+#+begin_src yaml
+apiVersion: kurama.io/v1
+kind: KuramaJob
+metadata:
+  name: hello-world
+spec:
+  steps:
+    - name: run-echo
+      command: |
+        echo "Hello, World!"
+#+end_src
