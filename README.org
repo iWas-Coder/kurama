@@ -19,29 +19,39 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 #+END_QUOTE
 
 * Table of Contents :toc:
-- [[#build][Build]]
-  - [[#binary][Binary]]
-  - [[#image][Image]]
-  - [[#helm-chart][Helm Chart]]
-- [[#deploy][Deploy]]
-  - [[#helm-chart-1][Helm Chart]]
-  - [[#argo-cd-application][Argo CD Application]]
+- [[#architecture][Architecture]]
+- [[#controller][Controller]]
+  - [[#build-binary][Build binary]]
+  - [[#build-image][Build image]]
+- [[#api][API]]
+- [[#ui][UI]]
+- [[#helm-chart][Helm Chart]]
+  - [[#create][Create]]
+  - [[#deploy][Deploy]]
+    - [[#manually][Manually]]
+    - [[#argo-cd][Argo CD]]
 - [[#usage][Usage]]
 
-* Build
+* Architecture
 
-** Binary
+(...)
+
+* Controller
+
+The Kurama Controller is the main component, where all the Kubernetes recources management logic is located. The package is hosted in the ~./pkg/controller/~ directory.
+
+** Build binary
 
 The ~kurama~ binary can be built with the following command:
 #+begin_src sh
-$  go build [-v]
+$  go build [-v] -o kurama
 #+end_src
 Some things can be tweaked by using these ENV vars:
 - *CGO_ENABLED:* The default is ~1~, which means the resulting binary will be dynamically linked with some system libraries (e.g. ~libc~, etc.). If wanted to build the binary statically, it can be passed a value of ~0~ instead.
 - *GOARCH:* Target architecture, defaults to host.
 - *GOOS:* Target operating system, defaults to host.
 
-** Image
+** Build image
 
 To build the container image which will be deployed later to a Kubernetes cluster, execute the following command:
 #+begin_src sh
@@ -54,7 +64,17 @@ $  buildah build -t kurama --build-arg="GOARCH=arm64"
 
 This image is hosted here at *GHCR*, specifically under ~ghcr.io/iwas-coder/kurama~, and it's updated regularly.
 
-** Helm Chart
+* API
+
+(...)
+
+* UI
+
+(...)
+
+* Helm Chart
+
+** Create
 
 To package the given *Helm Chart* (under the ~chart/~ directory) it's as easy as executing:
 #+begin_src sh
@@ -62,9 +82,9 @@ $  helm package chart
 #+end_src
 It will output a compressed archive named ~kurama-<VERSION>.tgz~, which can be used later on as an alternative method to deploy the app.
 
-* Deploy
+** Deploy
 
-** Helm Chart
+*** Manually
 
 Kurama is packaged within a *Helm Chart*, whose source code is hosted under the ~chart/~ directory. Thus, can be easily deployed to a cluster by executing the following commands:
 #+begin_src sh
@@ -72,7 +92,7 @@ $  helm [-n <NS>] upgrade --install [--atomic --create-namespace] kurama oci://g
 #+end_src
 The GHCR OCI URL can be replaced by the path to a locally packaged chart (/explained in the section right above/), if preferred.
 
-** Argo CD Application
+*** Argo CD
 
 Kurama can also be deployed to a cluster via Argo CD and its declarative approach. This is an example of an Argo CD's ~Application~ resource which deploys Kurama to its own namespace (the ~argo-cd~ namespace should be replaced by its given name when Argo CD was installed):
 #+begin_src yaml
