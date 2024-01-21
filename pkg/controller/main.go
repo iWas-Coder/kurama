@@ -2,35 +2,34 @@ package main
 
 import (
   "os"
-  "k8s.io/apimachinery/pkg/runtime"
-  ctrl "sigs.k8s.io/controller-runtime"
-  "github.com/iWas-Coder/kurama/controllers"
   "sigs.k8s.io/controller-runtime/pkg/healthz"
   "sigs.k8s.io/controller-runtime/pkg/log/zap"
-  kurama "github.com/iWas-Coder/kurama/api/v1"
-  utilruntime "k8s.io/apimachinery/pkg/util/runtime"
-  clientgoscheme "k8s.io/client-go/kubernetes/scheme"
-  metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
+  k8s_runtime "k8s.io/apimachinery/pkg/runtime"
+  k8s_ctrl_runtime "sigs.k8s.io/controller-runtime"
+  k8s_util_runtime "k8s.io/apimachinery/pkg/util/runtime"
+  k8s_clientgo_scheme "k8s.io/client-go/kubernetes/scheme"
+  kurama_v1 "github.com/iWas-Coder/kurama/pkg/controller/v1"
+  k8s_metrics_server "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 )
 
 var (
-  scheme = runtime.NewScheme()
-  setupLog = ctrl.Log.WithName("setup")
+  scheme = k8s_runtime.NewScheme()
+  setupLog = k8s_ctrl_runtime.Log.WithName("setup")
 )
 
 func init() {
-  utilruntime.Must(clientgoscheme.AddToScheme(scheme))
-  utilruntime.Must(kurama.AddToScheme(scheme))
+  k8s_util_runtime.Must(k8s_clientgo_scheme.AddToScheme(scheme))
+  k8s_util_runtime.Must(kurama_v1.AddToScheme(scheme))
 }
 
 func main() {
   enableLeaderElection := false
 
-  ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
+  k8s_ctrl_runtime.SetLogger(zap.New(zap.UseDevMode(true)))
 
-  mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+  mgr, err := k8s_ctrl_runtime.NewManager(k8s_ctrl_runtime.GetConfigOrDie(), k8s_ctrl_runtime.Options{
     Scheme: scheme,
-    Metrics: metricsserver.Options{ BindAddress: ":8080" },
+    Metrics: k8s_metrics_server.Options{ BindAddress: ":8080" },
     HealthProbeBindAddress: ":8081",
     LeaderElection: enableLeaderElection,
     LeaderElectionID: "b9715d24.kurama.io",
@@ -40,7 +39,7 @@ func main() {
     os.Exit(1)
   }
 
-  err = (&controllers.KuramaJobReconciler{
+  err = (&KuramaJobReconciler{
     Client: mgr.GetClient(),
     Scheme: mgr.GetScheme(),
   }).SetupWithManager(mgr)
@@ -61,7 +60,7 @@ func main() {
   }
 
   setupLog.Info("starting manager")
-  err = mgr.Start(ctrl.SetupSignalHandler())
+  err = mgr.Start(k8s_ctrl_runtime.SetupSignalHandler())
   if err != nil {
     setupLog.Error(err, "unable to run manager")
     os.Exit(1)

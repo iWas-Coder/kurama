@@ -1,4 +1,4 @@
-module github.com/iWas-Coder/kurama
+module github.com/iWas-Coder/kurama/pkg/controller
 
 go 1.21.1
 

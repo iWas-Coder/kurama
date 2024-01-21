@@ -4,7 +4,7 @@ ARG GOOS=linux
 ARG GOARCH=amd64
 WORKDIR /kurama
 COPY . .
-RUN go build -v -a
+RUN go build -v -a -o kurama
 
 FROM gcr.io/distroless/static:nonroot
 WORKDIR /
