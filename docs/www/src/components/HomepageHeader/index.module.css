@@ -1,0 +1,29 @@
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+}
+
+.Logo {
+  padding-bottom: 56px;
+}
+
+.Button {
+  margin-right: 1em;
+}
+.Button:last-child {
+  margin-right: 0;
+}
+
+.ButtonPair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

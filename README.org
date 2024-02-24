@@ -24,7 +24,11 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
   - [[#build-binary][Build binary]]
   - [[#build-image][Build image]]
 - [[#api][API]]
+  - [[#build-binary-1][Build binary]]
+  - [[#build-image-1][Build image]]
 - [[#ui][UI]]
+  - [[#build-binary-2][Build binary]]
+  - [[#build-image-2][Build image]]
 - [[#helm-chart][Helm Chart]]
   - [[#create][Create]]
   - [[#deploy][Deploy]]
@@ -68,7 +72,23 @@ This image is hosted here at *GHCR*, specifically under ~ghcr.io/iwas-coder/kura
 
 (...)
 
+** Build binary
+
+(...)
+
+** Build image
+
+(...)
+
 * UI
+
+(...)
+
+** Build binary
+
+(...)
+
+** Build image
 
 (...)
 
