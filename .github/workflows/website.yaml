@@ -1,0 +1,44 @@
+name: kurama-website
+
+on:
+  push:
+    branches: [master]
+    paths: ['docs/www/**']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: docs/www
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    environment:
+      name: ${{ github.workflow }}
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: checkout-repo
+        uses: actions/checkout@v4
+      - name: setup-node
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version: '20'
+          cache-dependency-path: docs/www/package-lock.json
+      - name: install-dependencies
+        run: npm ci --no-audit --no-fund --omit=optional
+      - name: build
+        run: npm run build
+      - name: setup-page
+        uses: actions/configure-pages@v4
+      - name: upload-page
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/www/build
+      - name: deploy-page
+        id: deploy
+        uses: actions/deploy-pages@v4

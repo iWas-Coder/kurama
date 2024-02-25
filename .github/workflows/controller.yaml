@@ -3,7 +3,7 @@ name: kurama-controller
 on:
   push:
     branches: [master]
-    path: ['pkg/controller/**']
+    paths: ['pkg/controller/**']
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.sha }}

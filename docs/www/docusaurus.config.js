@@ -23,12 +23,12 @@ const config = {
       {
         docs: {
           sidebarPath: './sidebars.js',
-          editUrl: 'https://github.com/iWas-Coder/kurama/docs/www/',
+          editUrl: 'https://github.com/iWas-Coder/kurama/docs/www/docs/',
           showLastUpdateTime: true
         },
         blog: {
           showReadingTime: true,
-          editUrl: 'https://github.com/iWas-Coder/kurama/docs/www/'
+          editUrl: 'https://github.com/iWas-Coder/kurama/docs/www/blog/'
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -57,7 +57,7 @@ const config = {
           label: 'Docs',
         },
         {
-          to: '/blog',
+          to: 'blog',
           position: 'left',
           label: 'Blog'
         }
@@ -77,11 +77,11 @@ const config = {
           items: [
             {
               label: 'What is Kurama?',
-              to: '/docs/overview/1.1-what-is-kurama'
+              to: 'docs/overview/1.1-what-is-kurama'
             },
             {
               label: 'Getting started',
-              to: '/docs/getting-started/2.1-getting-started'
+              to: 'docs/getting-started/2.1-getting-started'
             }
           ]
         },
